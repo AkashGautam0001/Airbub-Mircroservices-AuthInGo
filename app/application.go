@@ -1,6 +1,7 @@
 package app
 
 import (
+	config "AuthInGo/config/env"
 	"fmt"
 	"net/http"
 	"time"
@@ -17,9 +18,10 @@ type Application struct {
 }
 
 // Constructor
-func NewConfig(addr string) Config {
+func NewConfig() Config {
+	port := config.GetString("PORT", ":8080")
 	return Config{
-		Addr: addr,
+		Addr: port,
 	}
 }
 
@@ -38,7 +40,7 @@ func (app *Application) Run() error {
 		IdleTimeout:  30 * time.Second, // 30 seconds
 	}
 
-	fmt.Println("Starting Serer on", app.Config.Addr)
+	fmt.Println("Starting Server on", app.Config.Addr)
 	return server.ListenAndServe()
 
 }
