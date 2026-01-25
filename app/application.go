@@ -2,6 +2,10 @@ package app
 
 import (
 	config "AuthInGo/config/env"
+	"AuthInGo/controllers"
+	db "AuthInGo/db/repositories"
+	"AuthInGo/router"
+	"AuthInGo/services"
 	"fmt"
 	"net/http"
 	"time"
@@ -15,6 +19,7 @@ type Config struct {
 // Application : Application struct
 type Application struct {
 	Config Config
+	Store  db.Storage
 }
 
 // Constructor
@@ -28,16 +33,23 @@ func NewConfig() Config {
 func NewApplication(config Config) *Application {
 	return &Application{
 		Config: config,
+		Store:  *db.NewStorage(),
 	}
 }
 
 func (app *Application) Run() error {
+
+	ur := db.NewUsersRepository()
+	us := services.NewUserService(ur)
+	uc := controllers.NewUserController(us)
+	uRouter := router.NewUserRouter(uc)
+
 	server := &http.Server{
 		Addr:         app.Config.Addr,
-		Handler:      nil,              // setup chi router
-		ReadTimeout:  10 * time.Second, // 10 seconds
-		WriteTimeout: 10 * time.Second, // 10 seconds
-		IdleTimeout:  30 * time.Second, // 30 seconds
+		Handler:      router.SetupRouter(uRouter), // setup chi router
+		ReadTimeout:  10 * time.Second,            // 10 seconds
+		WriteTimeout: 10 * time.Second,            // 10 seconds
+		IdleTimeout:  30 * time.Second,            // 30 seconds
 	}
 
 	fmt.Println("Starting Server on", app.Config.Addr)
