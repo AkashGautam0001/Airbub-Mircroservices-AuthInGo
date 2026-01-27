@@ -19,3 +19,15 @@ func (uc *UserController) GetUserById(w http.ResponseWriter, r *http.Request) {
 	uc.UserService.GetUserById()
 	w.Write([]byte("User GetUserById Endpoint"))
 }
+
+func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("CreateUser called in UserController")
+	uc.UserService.CreateUser()
+	w.Write([]byte("User CreateUser Endpoint"))
+}
+
+func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("LoginUser called in UserController")
+	uc.UserService.LoginUser()
+	w.Write([]byte("User LoginUser Endpoint"))
+}

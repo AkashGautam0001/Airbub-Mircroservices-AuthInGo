@@ -27,4 +27,7 @@ migrate-down-to:
 	goose -dir $(MIGRATIONS_FOLDER) mysql "$(DB_URL)" down-to ${version}
 
 migrate-force:
-	goose -dir $(MIGRATIONS_FOLDER) mysql "$(DB_URL)" force
+	goose -dir $(MIGRATIONS_FOLDER) mysql "$(DB_URL)" force ${version}
+
+migrate-help:
+	goose -dir $(MIGRATIONS_FOLDER) help
