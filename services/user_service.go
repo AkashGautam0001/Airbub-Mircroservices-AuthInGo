@@ -59,8 +59,6 @@ func (u *UserServiceImpl) LoginUser(payload *dto.LoginUserRequestDTO) (string, e
 
 	}
 
-	fmt.Println(user)
-
 	isPasswordValid := utils.CheckPasswordHash(password, user.Password)
 	if !isPasswordValid {
 		fmt.Println("Invalid password")
@@ -80,7 +78,6 @@ func (u *UserServiceImpl) LoginUser(payload *dto.LoginUserRequestDTO) (string, e
 		fmt.Println("Error generating token", err)
 		return "", err
 	}
-	fmt.Println("JWT Secret", tokenString)
 	fmt.Println("User logged in successfully")
 	return tokenString, nil
 }
