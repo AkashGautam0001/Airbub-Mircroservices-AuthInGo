@@ -30,17 +30,7 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 func (uc *UserController) LoginUser(w http.ResponseWriter, r *http.Request) {
 
-	var payload dto.LoginUserRequestDTO
-
-	if jsonErr := utils.ReadJsonRequest(r, &payload); jsonErr != nil {
-		utils.WriteJsonErrorResponse(w, http.StatusBadRequest, "Something went wrong while logging", jsonErr)
-		return
-	}
-
-	if validationErr := utils.Validator.Struct(payload); validationErr != nil {
-		utils.WriteJsonErrorResponse(w, http.StatusBadRequest, "Invalid input data", validationErr)
-		return
-	}
+	payload := r.Context().Value("payload").(dto.LoginUserRequestDTO)
 
 	jwtToken, err := uc.UserService.LoginUser(&payload)
 
