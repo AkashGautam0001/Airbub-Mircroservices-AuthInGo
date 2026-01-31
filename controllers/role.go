@@ -55,3 +55,28 @@ func (rc *RoleController) GetAllRoles(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.WriteJsonSuccessResponse(w, http.StatusOK, "Roles Fetched Successfully", roles)
 }
+
+func (rc *RoleController) AssignRoleToUser(w http.ResponseWriter, r *http.Request) {
+	userIdStr := chi.URLParam(r, "userId")
+	roleIdStr := chi.URLParam(r, "roleId")
+
+	userId, err := strconv.ParseInt(userIdStr, 10, 64)
+	if err != nil {
+		utils.WriteJsonErrorResponse(w, http.StatusBadRequest, "Invalid User ID", err)
+		return
+	}
+
+	roleId, err := strconv.ParseInt(roleIdStr, 10, 64)
+	if err != nil {
+		utils.WriteJsonErrorResponse(w, http.StatusBadRequest, "Invalid Role ID", err)
+		return
+	}
+
+	err = rc.RoleService.AssignRoleToUser(userId, roleId)
+	if err != nil {
+		utils.WriteJsonErrorResponse(w, http.StatusInternalServerError, "Failed to assign role to user", err)
+		return
+	}
+
+	utils.WriteJsonSuccessResponse(w, http.StatusOK, "Role assigned to user successfully", nil)
+}

@@ -43,6 +43,11 @@ func UserCreateRequestValidator(next http.Handler) http.Handler {
 			utils.WriteJsonErrorResponse(w, http.StatusBadRequest, "Invalid input data", err)
 			return
 		}
+
+		//Understand it deeply
+		req_context := r.Context()
+		ctx := context.WithValue(req_context, "payload", payload)
+		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
 }

@@ -4,6 +4,7 @@ import (
 	env "AuthInGo/config/env"
 	db "AuthInGo/db/repositories"
 	"AuthInGo/dto"
+	"AuthInGo/models"
 	"AuthInGo/utils"
 	"fmt"
 
@@ -11,8 +12,8 @@ import (
 )
 
 type UserService interface {
-	GetUserById() error
-	CreateUser() error
+	GetUserById(id int) (*models.User, error)
+	CreateUser(payload *dto.CreateUserRequestDTO) error
 	LoginUser(payload *dto.LoginUserRequestDTO) (string, error)
 }
 
@@ -26,20 +27,23 @@ func NewUserService(_userRepository db.UsersRepository) UserService {
 	}
 }
 
-func (u *UserServiceImpl) GetUserById() error {
-	fmt.Println("Creating User in UserService")
-	u.userRepository.GetByID()
-	return nil
+func (u *UserServiceImpl) GetUserById(id int) (*models.User, error) {
+	fmt.Println("Getting User by ID in UserService")
+	user, err := u.userRepository.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
-func (u *UserServiceImpl) CreateUser() error {
+func (u *UserServiceImpl) CreateUser(payload *dto.CreateUserRequestDTO) error {
 	fmt.Println("Creating User in UserService")
-	password := "hashedPassword"
+	password := payload.Password
 	hashedPassword, err := utils.HashPassword(password)
 	if err != nil {
 		return err
 	}
-	u.userRepository.Create("username1", "user1@exmple.com", hashedPassword)
+	u.userRepository.Create(payload.Username, payload.Email, hashedPassword)
 	return nil
 }
 
@@ -65,10 +69,14 @@ func (u *UserServiceImpl) LoginUser(payload *dto.LoginUserRequestDTO) (string, e
 		return "", fmt.Errorf("invalid password")
 	}
 
+	fmt.Println(user.Id, user.Email)
+
 	jwtPayload := jwt.MapClaims{
 		"email": user.Email,
 		"id":    user.Id,
 	}
+
+	fmt.Println("jwtPayload", jwtPayload)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtPayload)
 
