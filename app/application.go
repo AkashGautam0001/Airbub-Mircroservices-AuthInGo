@@ -47,16 +47,23 @@ func (app *Application) Run() error {
 		return err
 	}
 	ur := repo.NewUsersRepository(db)
+	rr := repo.NewRoleRepository(db)
+
 	us := services.NewUserService(ur)
+	rs := services.NewRoleService(rr, nil)
+
 	uc := controllers.NewUserController(us)
+	rc := controllers.NewRoleController(rs)
+
 	uRouter := router.NewUserRouter(uc)
+	rRouter := router.NewRoleRouter(rc)
 
 	server := &http.Server{
 		Addr:         app.Config.Addr,
-		Handler:      router.SetupRouter(uRouter), // setup chi router
-		ReadTimeout:  10 * time.Second,            // 10 seconds
-		WriteTimeout: 10 * time.Second,            // 10 seconds
-		IdleTimeout:  30 * time.Second,            // 30 seconds
+		Handler:      router.SetupRouter(uRouter, rRouter), // setup chi router
+		ReadTimeout:  10 * time.Second,                     // 10 seconds
+		WriteTimeout: 10 * time.Second,                     // 10 seconds
+		IdleTimeout:  30 * time.Second,                     // 30 seconds
 	}
 
 	fmt.Println("Starting Server on", app.Config.Addr)
